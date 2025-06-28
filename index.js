@@ -4,11 +4,7 @@ require('dotenv').config();
 
 const parser = new Parser();
 const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent
-  ]
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
 });
 
 const FEED_URLS = [
@@ -16,7 +12,7 @@ const FEED_URLS = [
   'https://www.facebook.com/feeds/page.php?format=rss20&id=100069153349307'
 ];
 
-const CHANNEL_ID = '1387726802297819230'; // Kênh #chung trong Tin Tin
+const CHANNEL_ID = '1387726802297819230'; // ID kênh #chung trong server Tin Tin
 let lastGuids = {};
 
 async function checkFeeds() {
@@ -29,18 +25,18 @@ async function checkFeeds() {
         lastGuids[url] = latest.guid;
         const channel = await client.channels.fetch(CHANNEL_ID);
         if (channel) {
-          channel.send(`📢 Fanpage vừa đăng bài mới:\n👉 ${latest.link}`);
+          await channel.send(`🆕 Fanpage mới đăng bài: ${latest.title}\n👉 ${latest.link}`);
         }
       }
     } catch (err) {
-      console.error(`❌ Lỗi đọc feed từ ${url}: ${err.message}`);
+      console.error(`❌ Lỗi đọc RSS từ ${url}:`, err.message);
     }
   }
 }
 
 client.once('ready', () => {
-  console.log(`✅ Bot đã sẵn sàng dưới tên ${client.user.tag}`);
-  setInterval(checkFeeds, 3 * 60 * 1000); // Mỗi 3 phút
+  console.log(`✅ Bot đang hoạt động dưới tên ${client.user.tag}`);
+  setInterval(checkFeeds, 3 * 60 * 1000); // 3 phút
 });
 
 client.login(process.env.DISCORD_TOKEN);
